@@ -16,11 +16,11 @@ st.set_page_config(
 )
 
 # --- הגדרה ישירה ומדויקת של המפתחות ---
-os.environ['SPOTIPY_CLIENT_ID'] = "0f4090ee34e144d5a3605a461b8635b7"
-os.environ['SPOTIPY_CLIENT_SECRET'] = "e21950fe5a1840c3bf15d96e5791a124"
-os.environ['SPOTIPY_REDIRECT_URI'] = "https://spotify-music-autopsy-79ffaef7fwnqbs94ukwawh.streamlit.app/"
+CLIENT_ID = "0f4090ee34e144d5a3605a461b8635b7"
+CLIENT_SECRET = "e21950fe5a1840c3bf15d96e5791a124"
+REDIRECT_URI = "https://spotify-music-autopsy-79ffaef7fwnqbs94ukwawh.streamlit.app/"
 
-# Custom Clean Dark Clinical CSS (Avoiding AI Slop look)
+# Custom Clean Dark Clinical CSS
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
@@ -58,7 +58,6 @@ st.markdown("""
         font-weight: 700;
         color: #38bdf8;
         margin-bottom: 12px;
-        letter-spacing: -0.01em;
     }
     .roast-card {
         background: #111827;
@@ -105,13 +104,15 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-load_dotenv()
 SPOTIFY_SCOPE = "user-top-read"
 
-def get_auth_manager():
+def create_auth_manager():
     return SpotifyOAuth(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        redirect_uri=REDIRECT_URI,
         scope=SPOTIFY_SCOPE,
-        cache_path=None, # מבטיח אימות נקי לכל משתמש נפרד בלי לדרוס מטמון
+        cache_path=None,
         show_dialog=True
     )
 
@@ -124,23 +125,25 @@ def clinical_prompt_effect(text):
         time.sleep(0.005)
     placeholder.markdown(f"<div class='clinical-prompt'>{text}</div>", unsafe_allow_html=True)
 
-st.markdown("<h1 style='text-align: center; color: #f8fafc; font-weight: 700; font-size: 2.2rem; letter-spacing: -0.03em;'>SPOTIFY MUSIC AUTOPSY</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #f8fafc; font-weight: 700; font-size: 2.2rem;'>SPOTIFY MUSIC AUTOPSY</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 1rem; margin-bottom: 30px;'>Clinical diagnostic suite for severe auditory trauma.</p>", unsafe_allow_html=True)
 
 if 'stage' not in st.session_state:
     st.session_state.stage = 'init'
 
-auth_manager = get_auth_manager()
+auth_manager = create_auth_manager()
 
-# טיפול בקוד חזרה מאימות ספוטיפיי
+# בדיקה אם חזרנו מספוטיפיי עם קוד אימות
 query_params = st.query_params
 if "code" in query_params:
     code = query_params["code"]
     try:
-        auth_manager.get_access_token(code, as_dict=False)
-        st.query_params.clear()
-        st.session_state.stage = 'fetching'
-        st.rerun()
+        token_info = auth_manager.get_access_token(code, as_dict=True)
+        if token_info:
+            st.session_state.token_info = token_info
+            st.query_params.clear()
+            st.session_state.stage = 'fetching'
+            st.rerun()
     except Exception as e:
         st.error(f"Authentication error: {e}")
 
@@ -149,7 +152,7 @@ if st.session_state.stage == 'init':
     with c2:
         auth_url = auth_manager.get_authorize_url()
         st.markdown(f"""
-            <a href="{auth_url}" target="_blank" style="text-decoration: none;">
+            <a href="{auth_url}" target="_self" style="text-decoration: none;">
                 <div style="background: #1f2937; color: #1ed760; font-weight: 600; text-align: center; border-radius: 8px; padding: 0.8rem 1.5rem; border: 1px solid #374151; font-size: 1rem;">
                     Connect Spotify Account
                 </div>
@@ -158,18 +161,19 @@ if st.session_state.stage == 'init':
 
 if st.session_state.stage == 'fetching':
     log_container = st.empty()
-    log_container.markdown("<div class='live-log'>[LOG 01] Initializing secure handshake with Spotify API...</div>", unsafe_allow_html=True)
+    log_container.markdown("<div class='live-log'>[LOG 01] Initializing secure session for authenticated user...</div>", unsafe_allow_html=True)
     time.sleep(0.2)
 
     try:
-        token_info = auth_manager.get_cached_token()
+        token_info = st.session_state.get("token_info")
         if not token_info:
             st.session_state.stage = 'init'
             st.rerun()
-            
-        sp = spotipy.Spotify(auth_manager=auth_manager)
 
-        log_container.markdown("<div class='live-log'>[LOG 02] Extracting recent behavioral patterns (Top Artists & Tracks)...</div>", unsafe_allow_html=True)
+        # יצירת מופע ספוטיפיי מבוסס על הטוקן הפרטי של המשתמש הנוכחי בלבד
+        sp = spotipy.Spotify(auth=token_info['access_token'])
+
+        log_container.markdown("<div class='live-log'>[LOG 02] Extracting unique user behavioral patterns...</div>", unsafe_allow_html=True)
         top_artists = sp.current_user_top_artists(limit=8, time_range='short_term')
         top_tracks = sp.current_user_top_tracks(limit=8, time_range='short_term')
 
@@ -192,7 +196,7 @@ if st.session_state.stage == 'fetching':
         st.session_state.artist_names = [a['name'] for a in artists_data]
         st.session_state.track_names = [t['name'] for t in tracks_data]
 
-        log_container.markdown("<div class='live-log'>[LOG 03] Compiling diagnostic framework...</div>", unsafe_allow_html=True)
+        log_container.markdown("<div class='live-log'>[LOG 03] Compiling personalized diagnostic framework...</div>", unsafe_allow_html=True)
         time.sleep(0.3)
         log_container.empty()
 
@@ -248,7 +252,7 @@ if st.session_state.stage == 'q2':
             st.session_state.stage = 'q3'
             st.rerun()
 
-# --- Question 3 (New) ---
+# --- Question 3 ---
 if st.session_state.stage == 'q3':
     top_track = st.session_state.track_names[0] if st.session_state.track_names else "this track"
     clinical_prompt_effect(f"Diagnostic Probe 03:\n\nAnalysis reveals repeated loops of '{top_track}' during late-night hours (02:00 - 05:00).\n\nWhat is the clinical classification of this behavior?")
@@ -276,7 +280,6 @@ if st.session_state.stage == 'q3':
 # --- Clinical Dashboard ---
 if st.session_state.stage == 'dashboard':
 
-    # 1. Artists Section
     st.markdown("""
         <div class='clinical-card'>
             <div class='section-title'>Primary Entities (Top Artists & Metrics)</div>
@@ -296,7 +299,6 @@ if st.session_state.stage == 'dashboard':
 
     time.sleep(0.2)
 
-    # 2. Tracks Section
     st.markdown("""
         <div class='clinical-card' style='margin-top: 20px;'>
             <div class='section-title'>High-Frequency Vectors (Top Tracks)</div>
@@ -317,7 +319,6 @@ if st.session_state.stage == 'dashboard':
 
     time.sleep(0.2)
 
-    # 3. Behavioral Classification Tags
     st.markdown("""
         <div class='clinical-card' style='margin-top: 20px;'>
             <div class='section-title'>Assigned Behavioral Classifications</div>
@@ -330,7 +331,6 @@ if st.session_state.stage == 'dashboard':
 
     time.sleep(0.2)
 
-    # 4. Clinical Findings / Roast Log
     st.markdown("""
         <div class='clinical-card' style='margin-top: 20px;'>
             <div class='section-title'>Pathological Findings & Behavioral Notes</div>
@@ -351,7 +351,6 @@ if st.session_state.stage == 'dashboard':
             </div>
         """, unsafe_allow_html=True)
 
-    # 5. Treatment Plan
     st.markdown("""
         <div class='clinical-card' style='margin-top: 20px;'>
             <div class='section-title'>Mandatory Remediation Protocol</div>
@@ -366,7 +365,6 @@ if st.session_state.stage == 'dashboard':
     for r in remediations:
         st.markdown(f"<div class='clinical-card' style='border-left: 3px solid #10b981; padding: 14px 18px; margin-bottom: 8px;'><p style='margin:0; font-size: 0.9rem;'>{r}</p></div>", unsafe_allow_html=True)
 
-    # --- Export Report ---
     st.markdown("<br>", unsafe_allow_html=True)
     report_text = f"""=== CLINICAL MUSIC AUTOPSY REPORT ===
 Behavioral Log: {st.session_state.roast_log}
