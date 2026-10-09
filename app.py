@@ -1,5 +1,6 @@
 import os
 import math
+import random
 from collections import Counter
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -196,6 +197,16 @@ if st.session_state.stage == 'fetching':
         st.session_state.tracks_data = tracks_data
         st.session_state.artist_names = [a['name'] for a in artists_data]
         st.session_state.track_names = [t['name'] for t in tracks_data]
+        
+        # בחירת טווח שעות דינמי ואקראי לכל סשן אבחון
+        vulnerable_hours = [
+            "02:00 - 05:00 AM",
+            "03:30 - 06:15 AM",
+            "01:00 - 04:00 AM",
+            "04:00 - 07:00 AM (the dreaded dawn hours)",
+            "midnight to 04:30 AM"
+        ]
+        st.session_state.random_hours = random.choice(vulnerable_hours)
 
         log_container.markdown("<div class='live-log'>[LOG 03] Compiling personalized diagnostic framework...</div>", unsafe_allow_html=True)
         time.sleep(0.3)
@@ -277,10 +288,11 @@ if st.session_state.stage == 'q3':
             st.session_state.stage = 'q4'
             st.rerun()
 
-# --- Question 4 ---
+# --- Question 4 (Dynamic Hours) ---
 if st.session_state.stage == 'q4':
     top_track = st.session_state.track_names[0] if st.session_state.track_names else "this track"
-    clinical_prompt_effect(f"Diagnostic Probe 04:\n\nTelemetry reveals continuous, uninterrupted looping of '{top_track}' during vulnerable hours (02:00 - 05:00 AM).\n\nWhat is the clinical rationale for this pattern?")
+    random_hours = st.session_state.get("random_hours", "02:00 - 05:00 AM")
+    clinical_prompt_effect(f"Diagnostic Probe 04:\n\nTelemetry reveals continuous, uninterrupted looping of '{top_track}' during vulnerable hours ({random_hours}).\n\nWhat is the clinical rationale for this pattern?")
 
     col1, col2 = st.columns(2)
     with col1:
