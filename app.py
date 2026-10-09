@@ -15,10 +15,10 @@ st.set_page_config(
     layout="centered"
 )
 
-# הגדרה אוטומטית ובטוחה של משתני הסביבה מתוך ה-Secrets של סטרימלייט
+# הגדרה מדויקת של משתני הסביבה עם הכתובת המלאה שלך
 os.environ['SPOTIPY_CLIENT_ID'] = st.secrets.get("SPOTIFY_CLIENT_ID", "")
 os.environ['SPOTIPY_CLIENT_SECRET'] = st.secrets.get("SPOTIFY_CLIENT_SECRET", "")
-os.environ['SPOTIPY_REDIRECT_URI'] = st.secrets.get("SPOTIFY_REDIRECT_URI", "https://fwnqbs94ukwawh.streamlit.app")
+os.environ['SPOTIPY_REDIRECT_URI'] = st.secrets.get("SPOTIFY_REDIRECT_URI", "https://spotify-music-autopsy-79ffaef7fwnqbs94ukwawh.streamlit.app/")
 
 # Custom CSS for Stunning Glassmorphism, Gorgeous Mode Cards, and Animations
 st.markdown("""
@@ -336,7 +336,7 @@ if st.session_state.stage == 'dashboard':
         f"Behavioral Log: {st.session_state.roast_log}",
         "Aux Cord Hazard: Letting you pick songs at a party is a violation of basic human rights.",
         "Algorithm Victim: Your taste was carefully curated by a tired corporate machine in Stockholm.",
-        "Skip Button Abuse: Query never finish a single song before your brain demands instant dopamine.",
+        "Skip Button Abuse: You never finish a single song before your brain demands instant dopamine.",
         "Main Character Syndrome: You listen to this playlist while staring dramatically out of a bus window."
     ]
 
