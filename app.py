@@ -15,10 +15,10 @@ st.set_page_config(
     layout="centered"
 )
 
-# הגדרה מדויקת של משתני הסביבה עם הכתובת המלאה שלך
-os.environ['SPOTIPY_CLIENT_ID'] = st.secrets.get("SPOTIFY_CLIENT_ID", "")
-os.environ['SPOTIPY_CLIENT_SECRET'] = st.secrets.get("SPOTIFY_CLIENT_SECRET", "")
-os.environ['SPOTIPY_REDIRECT_URI'] = st.secrets.get("SPOTIFY_REDIRECT_URI", "https://spotify-music-autopsy-79ffaef7fwnqbs94ukwawh.streamlit.app/")
+# --- הגדרה ישירה ומדויקת של המפתחות ---
+os.environ['SPOTIPY_CLIENT_ID'] = "0f4090ee34e144d5a3605a461b8635b7"
+os.environ['SPOTIPY_CLIENT_SECRET'] = "e21950fe5a1840c3bf15d96e5791a124"
+os.environ['SPOTIPY_REDIRECT_URI'] = "https://spotify-music-autopsy-79ffaef7fwnqbs94ukwawh.streamlit.app/"
 
 # Custom CSS for Stunning Glassmorphism, Gorgeous Mode Cards, and Animations
 st.markdown("""
