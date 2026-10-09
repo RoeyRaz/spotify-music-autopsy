@@ -15,10 +15,15 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- מפתחות האפליקציה ---
-CLIENT_ID = "0f4090ee34e144d5a3605a461b8635b7"
-CLIENT_SECRET = "e21950fe5a1840c3bf15d96e5791a124"
-REDIRECT_URI = "https://spotify-music-autopsy-79ffaef7fwnqbs94ukwawh.streamlit.app/"
+# --- שליפה מאובטחת של המפתחות מתוך Streamlit Secrets ---
+try:
+    CLIENT_ID = st.secrets["spotify"]["client_id"]
+    CLIENT_SECRET = st.secrets["spotify"]["client_secret"]
+    REDIRECT_URI = st.secrets["spotify"]["redirect_uri"]
+except Exception as e:
+    st.error("Configuration Error: Missing Spotify secrets in Streamlit Cloud settings.")
+    st.stop()
+
 SPOTIFY_SCOPE = "user-top-read"
 
 # Custom Clean Dark Clinical CSS
