@@ -104,12 +104,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# יצירת מזהה סשן ייחודי לכל משתמש שפותח את האפליקציה כדי שלא ידרכו אחד לשני על הקאש
+# ניהול קאש מבודד לפי סשן משתמש
 if 'user_session_id' not in st.session_state:
     st.session_state.user_session_id = str(time.time())
 
 def get_auth_manager():
-    # קובץ קאש נפרד לחלוטין לכל משתמש שמבקר באתר
     unique_cache_path = f".cache_{st.session_state.user_session_id}"
     return SpotifyOAuth(
         client_id=CLIENT_ID,
@@ -137,7 +136,6 @@ if 'stage' not in st.session_state:
 
 auth_manager = get_auth_manager()
 
-# בדיקה האם חזרנו עם קוד אימות מספוטיפיי
 query_params = st.query_params
 if "code" in query_params:
     code = query_params["code"]
@@ -217,7 +215,7 @@ if st.session_state.stage == 'fetching':
 # --- Question 1 ---
 if st.session_state.stage == 'q1':
     top_artist = st.session_state.artist_names[0] if st.session_state.artist_names else "this artist"
-    clinical_prompt_effect(f"Subject exhibits an extreme statistical anomaly regarding the presence of '{top_artist}' in rotation.\n\nHow does the subject justify this dependency?")
+    clinical_prompt_effect(f"Diagnostic Probe 01:\n\nSubject exhibits an extreme statistical anomaly regarding the presence of '{top_artist}' in rotation.\n\nHow does the subject justify this dependency?")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -246,37 +244,61 @@ if st.session_state.stage == 'q2':
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Recently, I respect album sequencing"):
-            st.session_state.roast_log += " Claimed linear album appreciation. Fabricated testimony."
+            st.session_state.roast_log += " | Claimed linear album appreciation. Fabricated testimony."
             st.session_state.stage = 'q3'
             st.rerun()
     with col2:
         if st.button("Never, my attention span is entirely fried"):
-            st.session_state.roast_log += " Admitted to acute digital cognitive decline."
+            st.session_state.roast_log += " | Admitted to acute digital cognitive decline."
             st.session_state.stage = 'q3'
             st.rerun()
 
 # --- Question 3 ---
 if st.session_state.stage == 'q3':
-    top_track = st.session_state.track_names[0] if st.session_state.track_names else "this track"
-    clinical_prompt_effect(f"Diagnostic Probe 03:\n\nAnalysis reveals repeated loops of '{top_track}' during late-night hours (02:00 - 05:00).\n\nWhat is the clinical classification of this behavior?")
+    clinical_prompt_effect("Diagnostic Probe 03:\n\nIf you were handed the AUX cord at a social gathering right now, what is the immediate outcome?")
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("Existential contemplation and processing"):
-            st.session_state.roast_log += " Masked severe emotional turbulence as 'contemplation'."
+        if st.button("Absolute silence and universal panic"):
+            st.session_state.roast_log += " | Acknowledged public safety hazard status of music taste."
+            st.session_state.stage = 'q4'
+            st.rerun()
+        if st.button("Instant elevation of the room's vibe"):
+            st.session_state.roast_log += " | Suffers from severe main character delusions."
+            st.session_state.stage = 'q4'
+            st.rerun()
+    with col2:
+        if st.button("People would politely ask me to leave"):
+            st.session_state.roast_log += " | Fully aware of social rejection triggers."
+            st.session_state.stage = 'q4'
+            st.rerun()
+        if st.button("I don't go to social gatherings"):
+            st.session_state.roast_log += " | Confirmed terminal online isolation."
+            st.session_state.stage = 'q4'
+            st.rerun()
+
+# --- Question 4 ---
+if st.session_state.stage == 'q4':
+    top_track = st.session_state.track_names[0] if st.session_state.track_names else "this track"
+    clinical_prompt_effect(f"Diagnostic Probe 04:\n\nTelemetry reveals continuous, uninterrupted looping of '{top_track}' during vulnerable hours (02:00 - 05:00 AM).\n\nWhat is the clinical rationale for this pattern?")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Deep existential processing and healing"):
+            st.session_state.roast_log += f" | Masked late-night emotional breakdown over '{top_track}' as 'healing'."
             st.session_state.stage = 'dashboard'
             st.rerun()
-        if st.button("Background noise to drown out thoughts"):
-            st.session_state.roast_log += " Utilized music as a tactical shield against inner monologue."
+        if st.button("Background noise to suppress inner monologue"):
+            st.session_state.roast_log += " | Utilized audio loops as a tactical defense mechanism against thoughts."
             st.session_state.stage = 'dashboard'
             st.rerun()
     with col2:
-        if st.button("Accidental loop, I fell asleep"):
-            st.session_state.roast_log += " Blamed technical negligence for repetitive audio trauma."
+        if st.button("Fell asleep and left it playing on repeat"):
+            st.session_state.roast_log += " | Blamed severe physical exhaustion on algorithmic loop repetition."
             st.session_state.stage = 'dashboard'
             st.rerun()
-        if st.button("Pure unadulterated bad taste"):
-            st.session_state.roast_log += " Exhibited rare self-awareness of terrible preferences."
+        if st.button("Pure, unadulterated masochism"):
+            st.session_state.roast_log += " | Exhibited absolute self-awareness of emotional self-sabotage."
             st.session_state.stage = 'dashboard'
             st.rerun()
 
@@ -328,7 +350,11 @@ if st.session_state.stage == 'dashboard':
         </div>
     """, unsafe_allow_html=True)
 
-    tags = ["chronic echo-chamber dependent", "auxiliary cable security risk", "algorithmic captive", "dopamine deficiency marker", "unsupervised listener", "repetition liability"]
+    tags = [
+        "recession indicator", "bad vibes only", "needs professional help", 
+        "auxiliary cable security risk", "chronically online", "parasocial relationship enjoyer", 
+        "dopamine deficiency marker", "unsupervised listener", "crying in the club"
+    ]
     tags_html = "".join([f"<span class='tag-badge'>#{t}</span>" for t in tags])
     st.markdown(f"<div>{tags_html}</div>", unsafe_allow_html=True)
 
