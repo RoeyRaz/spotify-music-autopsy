@@ -124,6 +124,19 @@ st.markdown("""
 load_dotenv()
 SPOTIFY_SCOPE = "user-top-read"
 
+def get_auth_manager():
+    client_id = st.secrets.get("SPOTIFY_CLIENT_ID") or os.getenv("SPOTIFY_CLIENT_ID")
+    client_secret = st.secrets.get("SPOTIFY_CLIENT_SECRET") or os.getenv("SPOTIFY_CLIENT_SECRET")
+    redirect_uri = st.secrets.get("SPOTIFY_REDIRECT_URI") or os.getenv("SPOTIFY_REDIRECT_URI")
+    
+    return SpotifyOAuth(
+        client_id=client_id,
+        client_secret=client_secret,
+        redirect_uri=redirect_uri,
+        scope=SPOTIFY_SCOPE,
+        cache_path=None,
+        show_dialog=True
+    )
 
 def typewriter_effect(text, container_class="typewriter-box", speed=0.01):
     placeholder = st.empty()
@@ -134,47 +147,52 @@ def typewriter_effect(text, container_class="typewriter-box", speed=0.01):
         time.sleep(speed)
     placeholder.markdown(f"<div class='{container_class}'>{text}</div>", unsafe_allow_html=True)
 
-
-st.markdown(
-    "<h1 style='text-align: center; color: #ffffff; font-weight: 900; font-size: 3rem; letter-spacing: -1px; text-shadow: 0 0 40px rgba(30,215,96,0.4);'>SPOTIFY MUSIC AUTOPSY</h1>",
-    unsafe_allow_html=True)
-st.markdown(
-    "<p style='text-align: center; color: #94a3b8; font-size: 1.2rem; margin-bottom: 30px;'>A brutal breakdown of the tracks you desperately try to hide.</p>",
-    unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #ffffff; font-weight: 900; font-size: 3rem; letter-spacing: -1px; text-shadow: 0 0 40px rgba(30,215,96,0.4);'>SPOTIFY MUSIC AUTOPSY</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 1.2rem; margin-bottom: 30px;'>A brutal breakdown of the tracks you desperately try to hide.</p>", unsafe_allow_html=True)
 
 if 'stage' not in st.session_state:
     st.session_state.stage = 'init'
 
+auth_manager = get_auth_manager()
+
+# בדיקה אם קיבלנו קוד אימות מ-Spotify בכתובת האתר
+query_params = st.query_params
+if "code" in query_params:
+    code = query_params["code"]
+    try:
+        auth_manager.get_access_token(code, as_dict=False)
+        st.query_params.clear()
+        st.session_state.stage = 'fetching'
+        st.rerun()
+    except Exception as e:
+        st.error(f"Authentication error: {e}")
+
 if st.session_state.stage == 'init':
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
-        if st.button("Unlock Your Trauma"):
-            st.session_state.stage = 'fetching'
-            st.rerun()
+        auth_url = auth_manager.get_authorize_url()
+        st.markdown(f"""
+            <a href="{auth_url}" target="_self" style="text-decoration: none;">
+                <div style="background: linear-gradient(135deg, #1ed760 0%, #059669 100%); color: #030712; font-weight: 800; text-align: center; border-radius: 40px; padding: 0.9rem 1.8rem; box-shadow: 0 0 30px rgba(30, 215, 96, 0.4); font-size: 1.1rem; margin-bottom: 12px;">
+                    Unlock Your Trauma (Login)
+                </div>
+            </a>
+        """, unsafe_allow_html=True)
 
 if st.session_state.stage == 'fetching':
     log_container = st.empty()
-    log_container.markdown("<div class='live-log'>[1/3] Establishing connection to Spotify...</div>",
-                           unsafe_allow_html=True)
+    log_container.markdown("<div class='live-log'>[1/3] Establishing connection to Spotify...</div>", unsafe_allow_html=True)
     time.sleep(0.3)
 
     try:
-        # שליפת המפתחות מתוך ה-Secrets של סטרימלייט או מתוך משתני הסביבה המקומיים
-        client_id = st.secrets.get("SPOTIFY_CLIENT_ID") or os.getenv("SPOTIFY_CLIENT_ID")
-        client_secret = st.secrets.get("SPOTIFY_CLIENT_SECRET") or os.getenv("SPOTIFY_CLIENT_SECRET")
-        redirect_uri = st.secrets.get("SPOTIFY_REDIRECT_URI") or os.getenv("SPOTIFY_REDIRECT_URI")
-
-        auth_manager = SpotifyOAuth(
-            client_id=client_id,
-            client_secret=client_secret,
-            redirect_uri=redirect_uri,
-            scope=SPOTIFY_SCOPE,
-            open_browser=False
-        )
+        token_info = auth_manager.get_cached_token()
+        if not token_info:
+            st.session_state.stage = 'init'
+            st.rerun()
+            
         sp = spotipy.Spotify(auth_manager=auth_manager)
 
-        log_container.markdown("<div class='live-log'>[2/3] Extracting your top artists and tracks...</div>",
-                               unsafe_allow_html=True)
+        log_container.markdown("<div class='live-log'>[2/3] Extracting your top artists and tracks...</div>", unsafe_allow_html=True)
         top_artists = sp.current_user_top_artists(limit=8, time_range='short_term')
         top_tracks = sp.current_user_top_tracks(limit=8, time_range='short_term')
 
@@ -190,16 +208,13 @@ if st.session_state.stage == 'fetching':
             img_url = item['album']['images'][0]['url'] if item.get('album') and item['album'].get('images') else ""
             rank = idx + 1
             score = max(20, 100 - (idx * 10))
-            tracks_data.append(
-                {'name': item['name'], 'artist': item['artists'][0]['name'], 'image': img_url, 'rank': rank,
-                 'score': score})
+            tracks_data.append({'name': item['name'], 'artist': item['artists'][0]['name'], 'image': img_url, 'rank': rank, 'score': score})
 
         st.session_state.artists_data = artists_data
         st.session_state.tracks_data = tracks_data
         st.session_state.artist_names = [a['name'] for a in artists_data]
 
-        log_container.markdown("<div class='live-log'>[3/3] Initializing presentation flow...</div>",
-                               unsafe_allow_html=True)
+        log_container.markdown("<div class='live-log'>[3/3] Initializing presentation flow...</div>", unsafe_allow_html=True)
         time.sleep(0.4)
         log_container.empty()
 
@@ -217,8 +232,7 @@ if st.session_state.stage == 'fetching':
 # --- Interactive Question 1 ---
 if st.session_state.stage == 'q1':
     top_artist = st.session_state.artist_names[0] if st.session_state.artist_names else "this artist"
-    typewriter_effect(
-        f"⚠️ Forensic audit active. We notice an unhealthy obsession with {top_artist}.\n\nHow do you plead before the algorithm passes sentence?")
+    typewriter_effect(f"⚠️ Forensic audit active. We notice an unhealthy obsession with {top_artist}.\n\nHow do you plead before the algorithm passes sentence?")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -242,8 +256,7 @@ if st.session_state.stage == 'q1':
 
 # --- Question 2 ---
 if st.session_state.stage == 'q2':
-    typewriter_effect(
-        "🧠 Secondary psychological probe:\n\nWhen was the last time you listened to a full album from start to finish without skipping to shuffle?")
+    typewriter_effect("🧠 Secondary psychological probe:\n\nWhen was the last time you listened to a full album from start to finish without skipping to shuffle?")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -272,12 +285,8 @@ if st.session_state.stage == 'dashboard':
         with cols[idx]:
             if artist['image']:
                 st.image(artist['image'], use_container_width=True)
-            st.markdown(
-                f"<p style='text-align: center; font-weight: 700; font-size: 0.9rem; margin-bottom:0;'>{artist['name']}</p>",
-                unsafe_allow_html=True)
-            st.markdown(
-                f"<p style='text-align: center; color: #38bdf8; font-size: 0.75rem;'>Rank: #{artist['rank']} in rotation</p>",
-                unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align: center; font-weight: 700; font-size: 0.9rem; margin-bottom:0;'>{artist['name']}</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align: center; color: #38bdf8; font-size: 0.75rem;'>Rank: #{artist['rank']} in rotation</p>", unsafe_allow_html=True)
 
     artists_df = pd.DataFrame(st.session_state.artists_data)
     st.bar_chart(artists_df.set_index('name')['score'], color="#38bdf8")
@@ -296,14 +305,9 @@ if st.session_state.stage == 'dashboard':
         with cols_t[idx]:
             if track['image']:
                 st.image(track['image'], use_container_width=True)
-            st.markdown(
-                f"<p style='text-align: center; font-weight: 700; font-size: 0.85rem; margin-bottom:0;'>{track['name']}</p>",
-                unsafe_allow_html=True)
-            st.markdown(f"<p style='text-align: center; color: #94a3b8; font-size: 0.75rem;'>{track['artist']}</p>",
-                        unsafe_allow_html=True)
-            st.markdown(
-                f"<p style='text-align: center; color: #10b981; font-size: 0.75rem;'>Rank: #{track['rank']} in rotation</p>",
-                unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align: center; font-weight: 700; font-size: 0.85rem; margin-bottom:0;'>{track['name']}</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align: center; color: #94a3b8; font-size: 0.75rem;'>{track['artist']}</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align: center; color: #10b981; font-size: 0.75rem;'>Rank: #{track['rank']} in rotation</p>", unsafe_allow_html=True)
 
     tracks_df = pd.DataFrame(st.session_state.tracks_data)
     st.bar_chart(tracks_df.set_index('name')['score'], color="#10b981")
@@ -317,8 +321,7 @@ if st.session_state.stage == 'dashboard':
         </div>
     """, unsafe_allow_html=True)
 
-    tags = ["manic pixie dream girl", "terminal online", "poser", "aux cable menace", "edgelord in denial",
-            "unmedicated", "npc behavior", "aux cable villain"]
+    tags = ["manic pixie dream girl", "terminal online", "poser", "aux cable menace", "edgelord in denial", "unmedicated", "npc behavior", "aux cable villain"]
     tags_html = "".join([f"<span class='tag-badge'>#{t}</span>" for t in tags])
     st.markdown(f"<div>{tags_html}</div>", unsafe_allow_html=True)
 
@@ -359,9 +362,7 @@ if st.session_state.stage == 'dashboard':
         "Delete your account, throw away your auxiliary cable, and pick up an outdoor hobby like pacing angrily in a park."
     ]
     for t in treatments:
-        st.markdown(
-            f"<div class='animated-section' style='border-left: 5px solid #10b981; padding: 18px 24px; margin-bottom: 12px;'><p style='margin:0; font-weight: 550;'>{t}</p></div>",
-            unsafe_allow_html=True)
+        st.markdown(f"<div class='animated-section' style='border-left: 5px solid #10b981; padding: 18px 24px; margin-bottom: 12px;'><p style='margin:0; font-weight: 550;'>{t}</p></div>", unsafe_allow_html=True)
 
     # --- Export Report Button ---
     st.markdown("<br>", unsafe_allow_html=True)
