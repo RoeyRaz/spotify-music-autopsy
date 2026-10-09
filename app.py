@@ -3,7 +3,6 @@ import math
 from collections import Counter
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-from dotenv import load_dotenv
 import streamlit as st
 import time
 import pandas as pd
@@ -15,10 +14,11 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- הגדרה ישירה ומדויקת של המפתחות ---
+# --- מפתחות האפליקציה ---
 CLIENT_ID = "0f4090ee34e144d5a3605a461b8635b7"
 CLIENT_SECRET = "e21950fe5a1840c3bf15d96e5791a124"
 REDIRECT_URI = "https://spotify-music-autopsy-79ffaef7fwnqbs94ukwawh.streamlit.app/"
+SPOTIFY_SCOPE = "user-top-read"
 
 # Custom Clean Dark Clinical CSS
 st.markdown("""
@@ -104,9 +104,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-SPOTIFY_SCOPE = "user-top-read"
-
-def create_auth_manager():
+def get_auth_manager():
     return SpotifyOAuth(
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
@@ -131,9 +129,9 @@ st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 1rem; marg
 if 'stage' not in st.session_state:
     st.session_state.stage = 'init'
 
-auth_manager = create_auth_manager()
+auth_manager = get_auth_manager()
 
-# בדיקה אם חזרנו מספוטיפיי עם קוד אימות
+# בדיקה האם חזרנו עם קוד אימות מספוטיפיי
 query_params = st.query_params
 if "code" in query_params:
     code = query_params["code"]
@@ -141,6 +139,7 @@ if "code" in query_params:
         token_info = auth_manager.get_access_token(code, as_dict=True)
         if token_info:
             st.session_state.token_info = token_info
+            # ניקוי מוחלט של פרמטרי ה-URL כדי למנוע שימוש חוזר בקוד פגום
             st.query_params.clear()
             st.session_state.stage = 'fetching'
             st.rerun()
@@ -148,10 +147,14 @@ if "code" in query_params:
         st.error(f"Authentication error: {e}")
 
 if st.session_state.stage == 'init':
+    # איפוס נתונים קודמים כדי לוודא שאין שאריות ממשתמש קודם
+    st.session_state.pop('artists_data', None)
+    st.session_state.pop('tracks_data', None)
+    st.session_state.pop('token_info', None)
+    
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
         auth_url = auth_manager.get_authorize_url()
-        # תוקן בחזרה ל- target="_blank" כדי למנוע את חסימת הדפדפן
         st.markdown(f"""
             <a href="{auth_url}" target="_blank" style="text-decoration: none;">
                 <div style="background: #1f2937; color: #1ed760; font-weight: 600; text-align: center; border-radius: 8px; padding: 0.8rem 1.5rem; border: 1px solid #374151; font-size: 1rem;">
@@ -162,7 +165,7 @@ if st.session_state.stage == 'init':
 
 if st.session_state.stage == 'fetching':
     log_container = st.empty()
-    log_container.markdown("<div class='live-log'>[LOG 01] Initializing secure session for authenticated user...</div>", unsafe_allow_html=True)
+    log_container.markdown("<div class='live-log'>[LOG 01] Initializing isolated session for incoming user...</div>", unsafe_allow_html=True)
     time.sleep(0.2)
 
     try:
@@ -171,6 +174,7 @@ if st.session_state.stage == 'fetching':
             st.session_state.stage = 'init'
             st.rerun()
 
+        # חיבור המשתמש החדש באמצעות הטוקן האישי שלו בלבד
         sp = spotipy.Spotify(auth=token_info['access_token'])
 
         log_container.markdown("<div class='live-log'>[LOG 02] Extracting unique user behavioral patterns...</div>", unsafe_allow_html=True)
