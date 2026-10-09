@@ -20,108 +20,87 @@ os.environ['SPOTIPY_CLIENT_ID'] = "0f4090ee34e144d5a3605a461b8635b7"
 os.environ['SPOTIPY_CLIENT_SECRET'] = "e21950fe5a1840c3bf15d96e5791a124"
 os.environ['SPOTIPY_REDIRECT_URI'] = "https://spotify-music-autopsy-79ffaef7fwnqbs94ukwawh.streamlit.app/"
 
-# Custom CSS for Stunning Glassmorphism, Gorgeous Mode Cards, and Animations
+# Custom Clean Dark Clinical CSS (Avoiding AI Slop look)
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800;900&display=swap');
-
-    @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
     .main {
-        background: linear-gradient(-45deg, #0f172a, #311042, #1e1b4b, #030712);
-        background-size: 400% 400%;
-        animation: gradientBG 15s ease infinite;
-        color: #f8fafc;
+        background-color: #0b0f19;
+        color: #f1f5f9;
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
     .stButton>button {
-        background: linear-gradient(135deg, #1ed760 0%, #059669 100%);
-        color: #030712;
-        font-weight: 800;
-        letter-spacing: 0.5px;
-        border-radius: 40px;
-        padding: 0.9rem 1.8rem;
-        border: none;
-        box-shadow: 0 0 30px rgba(30, 215, 96, 0.4);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: #111827;
+        color: #f3f4f6;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        border: 1px solid #374151;
+        transition: all 0.2s ease;
         width: 100%;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
     }
     .stButton>button:hover {
-        transform: translateY(-2px) scale(1.02);
-        box-shadow: 0 0 40px rgba(30, 215, 96, 0.7);
+        background: #1f2937;
+        border-color: #1ed760;
+        color: #1ed760;
     }
-    .animated-section {
-        animation: fadeIn 0.8s ease-out forwards;
-        background: rgba(30, 41, 59, 0.75);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        padding: 28px;
-        border-radius: 24px;
-        margin-bottom: 24px;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    .clinical-card {
+        background: #111827;
+        border: 1px solid #1f2937;
+        padding: 24px;
+        border-radius: 12px;
+        margin-bottom: 20px;
     }
     .section-title {
-        font-size: 1.6rem;
-        font-weight: 900;
+        font-size: 1.25rem;
+        font-weight: 700;
         color: #38bdf8;
-        margin-bottom: 15px;
-        text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+        margin-bottom: 12px;
+        letter-spacing: -0.01em;
     }
     .roast-card {
-        background: linear-gradient(145deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        border-left: 6px solid #ef4444;
-        padding: 22px;
-        border-radius: 16px;
-        margin-bottom: 15px;
-        box-shadow: 0 10px 25px rgba(239, 68, 68, 0.12);
-        animation: fadeIn 0.8s ease-out forwards;
+        background: #111827;
+        border-left: 4px solid #ef4444;
+        border-top: 1px solid #1f2937;
+        border-right: 1px solid #1f2937;
+        border-bottom: 1px solid #1f2937;
+        padding: 18px;
+        border-radius: 8px;
+        margin-bottom: 12px;
     }
     .tag-badge {
         display: inline-block;
-        background: rgba(239, 68, 68, 0.15);
+        background: rgba(239, 68, 68, 0.1);
         color: #fca5a5;
-        border: 1px solid rgba(239, 68, 68, 0.4);
-        padding: 8px 16px;
-        border-radius: 30px;
-        font-size: 0.9rem;
-        font-weight: 700;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
         margin-right: 8px;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
     .live-log {
-        background: rgba(15, 23, 42, 0.85);
-        border-left: 4px solid #38bdf8;
-        padding: 14px 20px;
-        border-radius: 12px;
+        background: #030712;
+        border-left: 3px solid #38bdf8;
+        padding: 12px 16px;
+        border-radius: 6px;
         font-family: monospace;
         color: #38bdf8;
-        font-size: 0.95rem;
-        margin-bottom: 15px;
-        box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        font-size: 0.9rem;
+        margin-bottom: 12px;
     }
-    .typewriter-box {
-        background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(30, 41, 59, 0.85) 100%);
-        border: 1px solid rgba(56, 189, 248, 0.3);
-        padding: 24px;
-        border-radius: 20px;
-        color: #e0f2fe;
-        font-weight: 600;
-        margin-bottom: 24px;
-        text-align: center;
-        font-size: 1.15rem;
-        box-shadow: 0 10px 30px rgba(56, 189, 248, 0.15);
+    .clinical-prompt {
+        background: #111827;
+        border: 1px solid #374151;
+        padding: 20px;
+        border-radius: 10px;
+        color: #e2e8f0;
+        font-weight: 500;
+        margin-bottom: 20px;
+        font-size: 1.05rem;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -132,28 +111,28 @@ SPOTIFY_SCOPE = "user-top-read"
 def get_auth_manager():
     return SpotifyOAuth(
         scope=SPOTIFY_SCOPE,
-        cache_path=None,
+        cache_path=None, # מבטיח אימות נקי לכל משתמש נפרד בלי לדרוס מטמון
         show_dialog=True
     )
 
-def typewriter_effect(text, container_class="typewriter-box", speed=0.01):
+def clinical_prompt_effect(text):
     placeholder = st.empty()
     current_text = ""
     for char in text:
         current_text += char
-        placeholder.markdown(f"<div class='{container_class}'>{current_text}▌</div>", unsafe_allow_html=True)
-        time.sleep(speed)
-    placeholder.markdown(f"<div class='{container_class}'>{text}</div>", unsafe_allow_html=True)
+        placeholder.markdown(f"<div class='clinical-prompt'>{current_text}▌</div>", unsafe_allow_html=True)
+        time.sleep(0.005)
+    placeholder.markdown(f"<div class='clinical-prompt'>{text}</div>", unsafe_allow_html=True)
 
-st.markdown("<h1 style='text-align: center; color: #ffffff; font-weight: 900; font-size: 3rem; letter-spacing: -1px; text-shadow: 0 0 40px rgba(30,215,96,0.4);'>SPOTIFY MUSIC AUTOPSY</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 1.2rem; margin-bottom: 30px;'>A brutal breakdown of the tracks you desperately try to hide.</p>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #f8fafc; font-weight: 700; font-size: 2.2rem; letter-spacing: -0.03em;'>SPOTIFY MUSIC AUTOPSY</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 1rem; margin-bottom: 30px;'>Clinical diagnostic suite for severe auditory trauma.</p>", unsafe_allow_html=True)
 
 if 'stage' not in st.session_state:
     st.session_state.stage = 'init'
 
 auth_manager = get_auth_manager()
 
-# בדיקה אם קיבלנו קוד אימות מ-Spotify בכתובת האתר
+# טיפול בקוד חזרה מאימות ספוטיפיי
 query_params = st.query_params
 if "code" in query_params:
     code = query_params["code"]
@@ -171,16 +150,16 @@ if st.session_state.stage == 'init':
         auth_url = auth_manager.get_authorize_url()
         st.markdown(f"""
             <a href="{auth_url}" target="_blank" style="text-decoration: none;">
-                <div style="background: linear-gradient(135deg, #1ed760 0%, #059669 100%); color: #030712; font-weight: 800; text-align: center; border-radius: 40px; padding: 0.9rem 1.8rem; box-shadow: 0 0 30px rgba(30, 215, 96, 0.4); font-size: 1.1rem; margin-bottom: 12px;">
-                    Unlock Your Trauma (Login)
+                <div style="background: #1f2937; color: #1ed760; font-weight: 600; text-align: center; border-radius: 8px; padding: 0.8rem 1.5rem; border: 1px solid #374151; font-size: 1rem;">
+                    Connect Spotify Account
                 </div>
             </a>
         """, unsafe_allow_html=True)
 
 if st.session_state.stage == 'fetching':
     log_container = st.empty()
-    log_container.markdown("<div class='live-log'>[1/3] Establishing connection to Spotify...</div>", unsafe_allow_html=True)
-    time.sleep(0.3)
+    log_container.markdown("<div class='live-log'>[LOG 01] Initializing secure handshake with Spotify API...</div>", unsafe_allow_html=True)
+    time.sleep(0.2)
 
     try:
         token_info = auth_manager.get_cached_token()
@@ -190,7 +169,7 @@ if st.session_state.stage == 'fetching':
             
         sp = spotipy.Spotify(auth_manager=auth_manager)
 
-        log_container.markdown("<div class='live-log'>[2/3] Extracting your top artists and tracks...</div>", unsafe_allow_html=True)
+        log_container.markdown("<div class='live-log'>[LOG 02] Extracting recent behavioral patterns (Top Artists & Tracks)...</div>", unsafe_allow_html=True)
         top_artists = sp.current_user_top_artists(limit=8, time_range='short_term')
         top_tracks = sp.current_user_top_tracks(limit=8, time_range='short_term')
 
@@ -211,9 +190,10 @@ if st.session_state.stage == 'fetching':
         st.session_state.artists_data = artists_data
         st.session_state.tracks_data = tracks_data
         st.session_state.artist_names = [a['name'] for a in artists_data]
+        st.session_state.track_names = [t['name'] for t in tracks_data]
 
-        log_container.markdown("<div class='live-log'>[3/3] Initializing presentation flow...</div>", unsafe_allow_html=True)
-        time.sleep(0.4)
+        log_container.markdown("<div class='live-log'>[LOG 03] Compiling diagnostic framework...</div>", unsafe_allow_html=True)
+        time.sleep(0.3)
         log_container.empty()
 
         st.session_state.stage = 'q1'
@@ -227,54 +207,79 @@ if st.session_state.stage == 'fetching':
             st.session_state.stage = 'init'
             st.rerun()
 
-# --- Interactive Question 1 ---
+# --- Question 1 ---
 if st.session_state.stage == 'q1':
     top_artist = st.session_state.artist_names[0] if st.session_state.artist_names else "this artist"
-    typewriter_effect(f"⚠️ Forensic audit active. We notice an unhealthy obsession with {top_artist}.\n\nHow do you plead before the algorithm passes sentence?")
+    clinical_prompt_effect(f"Subject exhibits an extreme statistical anomaly regarding the presence of '{top_artist}' in rotation.\n\nHow does the subject justify this dependency?")
 
     col1, col2 = st.columns(2)
     with col1:
         if st.button("I stand by my artistic choices"):
-            st.session_state.roast_log = f"Pled guilty to defending {top_artist}. Deep denial detected."
+            st.session_state.roast_log = f"Pled guilty to defending {top_artist}. Severe denial."
             st.session_state.stage = 'q2'
             st.rerun()
-        if st.button("It's strictly for the gym, I swear"):
-            st.session_state.roast_log = f"Blamed {top_artist} on gym sessions. Zero heavy lifting found."
+        if st.button("It's strictly for physical training"):
+            st.session_state.roast_log = f"Blamed {top_artist} on gym sessions. Zero cardiovascular exertion detected."
             st.session_state.stage = 'q2'
             st.rerun()
     with col2:
-        if st.button("My younger brother hacked my account"):
-            st.session_state.roast_log = f"Tried blaming a younger sibling for listening to {top_artist}."
+        if st.button("A sibling accessed my credentials"):
+            st.session_state.roast_log = f"Disowned responsibility, blaming family members for {top_artist}."
             st.session_state.stage = 'q2'
             st.rerun()
-        if st.button("Please don't judge me"):
-            st.session_state.roast_log = "Pleaded for mercy. Empathy modules rejected."
+        if st.button("No comment, please spare me"):
+            st.session_state.roast_log = "Refused cooperation under questioning. Guilt assumed."
             st.session_state.stage = 'q2'
             st.rerun()
 
 # --- Question 2 ---
 if st.session_state.stage == 'q2':
-    typewriter_effect("🧠 Secondary psychological probe:\n\nWhen was the last time you listened to a full album from start to finish without skipping to shuffle?")
+    clinical_prompt_effect("Diagnostic Probe 02:\n\nWhen was the last instance the subject completed an entire studio album without triggering shuffle mode or skipping tracks?")
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("Yesterday, I respect real albums"):
-            st.session_state.roast_log += " Claimed to respect full albums. Lie detected."
+        if st.button("Recently, I respect album sequencing"):
+            st.session_state.roast_log += " Claimed linear album appreciation. Fabricated testimony."
+            st.session_state.stage = 'q3'
+            st.rerun()
+    with col2:
+        if st.button("Never, my attention span is entirely fried"):
+            st.session_state.roast_log += " Admitted to acute digital cognitive decline."
+            st.session_state.stage = 'q3'
+            st.rerun()
+
+# --- Question 3 (New) ---
+if st.session_state.stage == 'q3':
+    top_track = st.session_state.track_names[0] if st.session_state.track_names else "this track"
+    clinical_prompt_effect(f"Diagnostic Probe 03:\n\nAnalysis reveals repeated loops of '{top_track}' during late-night hours (02:00 - 05:00).\n\nWhat is the clinical classification of this behavior?")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Existential contemplation and processing"):
+            st.session_state.roast_log += " Masked severe emotional turbulence as 'contemplation'."
+            st.session_state.stage = 'dashboard'
+            st.rerun()
+        if st.button("Background noise to drown out thoughts"):
+            st.session_state.roast_log += " Utilized music as a tactical shield against inner monologue."
             st.session_state.stage = 'dashboard'
             st.rerun()
     with col2:
-        if st.button("Never, my attention span is fried"):
-            st.session_state.roast_log += " Admitted to complete digital brain rot."
+        if st.button("Accidental loop, I fell asleep"):
+            st.session_state.roast_log += " Blamed technical negligence for repetitive audio trauma."
+            st.session_state.stage = 'dashboard'
+            st.rerun()
+        if st.button("Pure unadulterated bad taste"):
+            st.session_state.roast_log += " Exhibited rare self-awareness of terrible preferences."
             st.session_state.stage = 'dashboard'
             st.rerun()
 
-# --- Continuous Seamless Dashboard Presentation ---
+# --- Clinical Dashboard ---
 if st.session_state.stage == 'dashboard':
 
-    # 1. Top Artists Section
+    # 1. Artists Section
     st.markdown("""
-        <div class='animated-section'>
-            <div class='section-title'>👑 Primary Suspects (Top Artists & Rotation Rank)</div>
+        <div class='clinical-card'>
+            <div class='section-title'>Primary Entities (Top Artists & Metrics)</div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -283,18 +288,18 @@ if st.session_state.stage == 'dashboard':
         with cols[idx]:
             if artist['image']:
                 st.image(artist['image'], use_container_width=True)
-            st.markdown(f"<p style='text-align: center; font-weight: 700; font-size: 0.9rem; margin-bottom:0;'>{artist['name']}</p>", unsafe_allow_html=True)
-            st.markdown(f"<p style='text-align: center; color: #38bdf8; font-size: 0.75rem;'>Rank: #{artist['rank']} in rotation</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align: center; font-weight: 600; font-size: 0.85rem; margin-bottom:0;'>{artist['name']}</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align: center; color: #38bdf8; font-size: 0.75rem;'>Index: #{artist['rank']}</p>", unsafe_allow_html=True)
 
     artists_df = pd.DataFrame(st.session_state.artists_data)
     st.bar_chart(artists_df.set_index('name')['score'], color="#38bdf8")
 
-    time.sleep(0.3)
+    time.sleep(0.2)
 
-    # 2. Top Tracks Section
+    # 2. Tracks Section
     st.markdown("""
-        <div class='animated-section' style='margin-top: 30px;'>
-            <div class='section-title'>🎵 Primary Anthems (Top Tracks & Rotation Rank)</div>
+        <div class='clinical-card' style='margin-top: 20px;'>
+            <div class='section-title'>High-Frequency Vectors (Top Tracks)</div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -303,83 +308,81 @@ if st.session_state.stage == 'dashboard':
         with cols_t[idx]:
             if track['image']:
                 st.image(track['image'], use_container_width=True)
-            st.markdown(f"<p style='text-align: center; font-weight: 700; font-size: 0.85rem; margin-bottom:0;'>{track['name']}</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align: center; font-weight: 600; font-size: 0.8rem; margin-bottom:0;'>{track['name']}</p>", unsafe_allow_html=True)
             st.markdown(f"<p style='text-align: center; color: #94a3b8; font-size: 0.75rem;'>{track['artist']}</p>", unsafe_allow_html=True)
-            st.markdown(f"<p style='text-align: center; color: #10b981; font-size: 0.75rem;'>Rank: #{track['rank']} in rotation</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='text-align: center; color: #10b981; font-size: 0.75rem;'>Index: #{track['rank']}</p>", unsafe_allow_html=True)
 
     tracks_df = pd.DataFrame(st.session_state.tracks_data)
     st.bar_chart(tracks_df.set_index('name')['score'], color="#10b981")
 
-    time.sleep(0.3)
+    time.sleep(0.2)
 
-    # 3. Tags Section
+    # 3. Behavioral Classification Tags
     st.markdown("""
-        <div class='animated-section' style='margin-top: 30px;'>
-            <div class='section-title'>🏷️ Assigned Judgment Tags</div>
+        <div class='clinical-card' style='margin-top: 20px;'>
+            <div class='section-title'>Assigned Behavioral Classifications</div>
         </div>
     """, unsafe_allow_html=True)
 
-    tags = ["manic pixie dream girl", "terminal online", "poser", "aux cable menace", "edgelord in denial", "unmedicated", "npc behavior", "aux cable villain"]
+    tags = ["chronic echo-chamber dependent", "auxiliary cable security risk", "algorithmic captive", "dopamine deficiency marker", "unsupervised listener", "repetition liability"]
     tags_html = "".join([f"<span class='tag-badge'>#{t}</span>" for t in tags])
     st.markdown(f"<div>{tags_html}</div>", unsafe_allow_html=True)
 
-    time.sleep(0.3)
+    time.sleep(0.2)
 
-    # 4. Expanded Micro-Roasts Section
+    # 4. Clinical Findings / Roast Log
     st.markdown("""
-        <div class='animated-section' style='margin-top: 30px;'>
-            <div class='section-title'>🔥 Unfiltered Micro-Roasts & Behavioral Findings</div>
+        <div class='clinical-card' style='margin-top: 20px;'>
+            <div class='section-title'>Pathological Findings & Behavioral Notes</div>
         </div>
     """, unsafe_allow_html=True)
 
-    micro_roasts = [
-        f"Behavioral Log: {st.session_state.roast_log}",
-        "Aux Cord Hazard: Letting you pick songs at a party is a violation of basic human rights.",
-        "Algorithm Victim: Your taste was carefully curated by a tired corporate machine in Stockholm.",
-        "Skip Button Abuse: You never finish a single song before your brain demands instant dopamine.",
-        "Main Character Syndrome: You listen to this playlist while staring dramatically out of a bus window."
+    findings = [
+        f"Subject Log: {st.session_state.roast_log}",
+        "Auxiliary Risk Assessment: Permitting subject direct control over shared environment output constitutes a structural hazard.",
+        "Dopamine Management: Complete reliance on high-rotation loops indicates severe resistance to cognitive friction.",
+        "Aesthetic Profile: Taste parameters suggest heavy exposure to unmonitored digital isolation."
     ]
 
-    for roast in micro_roasts:
+    for finding in findings:
         st.markdown(f"""
             <div class="roast-card">
-                <p style="font-size: 1.02rem; line-height: 1.5; color: #fca5a5; margin:0; font-weight: 600;">{roast}</p>
+                <p style="font-size: 0.95rem; line-height: 1.4; color: #fca5a5; margin:0; font-weight: 500;">{finding}</p>
             </div>
         """, unsafe_allow_html=True)
 
-    # 5. Recommendations Section
+    # 5. Treatment Plan
     st.markdown("""
-        <div class='animated-section' style='margin-top: 30px;'>
-            <div class='section-title'>💊 Mandatory Treatment Plan</div>
+        <div class='clinical-card' style='margin-top: 20px;'>
+            <div class='section-title'>Mandatory Remediation Protocol</div>
         </div>
     """, unsafe_allow_html=True)
 
-    treatments = [
-        "Enforce absolute silence for 48 consecutive hours to allow your fried neurons to reboot.",
-        "Listen to a mainstream commercial radio station and accept that global popularity doesn't personally offend you.",
-        "Delete your account, throw away your auxiliary cable, and pick up an outdoor hobby like pacing angrily in a park."
+    remediations = [
+        "Enforce absolute acoustic deprivation for 72 hours to allow baseline neurological reset.",
+        "Expose subject to unfiltered terrestrial radio broadcast formats to re-establish tolerance for mainstream consensus.",
+        "Revoke auxiliary connection privileges indefinitely."
     ]
-    for t in treatments:
-        st.markdown(f"<div class='animated-section' style='border-left: 5px solid #10b981; padding: 18px 24px; margin-bottom: 12px;'><p style='margin:0; font-weight: 550;'>{t}</p></div>", unsafe_allow_html=True)
+    for r in remediations:
+        st.markdown(f"<div class='clinical-card' style='border-left: 3px solid #10b981; padding: 14px 18px; margin-bottom: 8px;'><p style='margin:0; font-size: 0.9rem;'>{r}</p></div>", unsafe_allow_html=True)
 
-    # --- Export Report Button ---
+    # --- Export Report ---
     st.markdown("<br>", unsafe_allow_html=True)
-    report_text = f"""=== SPOTIFY MUSIC AUTOPSY REPORT ===
+    report_text = f"""=== CLINICAL MUSIC AUTOPSY REPORT ===
 Behavioral Log: {st.session_state.roast_log}
 Top Artists: {', '.join(st.session_state.artist_names[:5])}
-Primary Diagnosis: Terminal online culture and acute lack of musical supervision.
-Aux Cord Threat Level: CRITICAL HAZARD.
+Diagnostic Conclusion: Acute exposure to terminal online echo chambers and cognitive looping.
 """
     st.download_button(
-        label="📥 Export Autopsy Report",
+        label="📥 Export Diagnostic Summary",
         data=report_text,
-        file_name="spotify_autopsy_report.txt",
+        file_name="spotify_clinical_autopsy.txt",
         mime="text/plain"
     )
 
     st.markdown("<br>", unsafe_allow_html=True)
     c_reset1, c_reset2, c_reset3 = st.columns([1, 2, 1])
     with c_reset2:
-        if st.button("Start Over / Roast Someone Else"):
+        if st.button("New Patient Diagnostic Scan"):
             st.session_state.stage = 'init'
             st.rerun()
