@@ -159,7 +159,18 @@ if st.session_state.stage == 'fetching':
     time.sleep(0.3)
 
     try:
-        auth_manager = SpotifyOAuth(scope=SPOTIFY_SCOPE, open_browser=True)
+        # שליפת המפתחות מתוך ה-Secrets של סטרימלייט או מתוך משתני הסביבה המקומיים
+        client_id = st.secrets.get("SPOTIFY_CLIENT_ID") or os.getenv("SPOTIFY_CLIENT_ID")
+        client_secret = st.secrets.get("SPOTIFY_CLIENT_SECRET") or os.getenv("SPOTIFY_CLIENT_SECRET")
+        redirect_uri = st.secrets.get("SPOTIFY_REDIRECT_URI") or os.getenv("SPOTIFY_REDIRECT_URI")
+
+        auth_manager = SpotifyOAuth(
+            client_id=client_id,
+            client_secret=client_secret,
+            redirect_uri=redirect_uri,
+            scope=SPOTIFY_SCOPE,
+            open_browser=False
+        )
         sp = spotipy.Spotify(auth_manager=auth_manager)
 
         log_container.markdown("<div class='live-log'>[2/3] Extracting your top artists and tracks...</div>",
@@ -167,12 +178,10 @@ if st.session_state.stage == 'fetching':
         top_artists = sp.current_user_top_artists(limit=8, time_range='short_term')
         top_tracks = sp.current_user_top_tracks(limit=8, time_range='short_term')
 
-        # שימוש במיקום המדויק בדירוג (Rank 1 עד 8) כדי שהנתונים יהיו אמיתיים לחלוטין ומדויקים
         artists_data = []
         for idx, item in enumerate(top_artists['items']):
             img_url = item['images'][0]['url'] if item.get('images') else ""
             rank = idx + 1
-            # ציון משוקלל הגיוני שמציג את היתרון של מקום ראשון על פני השאר בצורה חלקה
             score = max(20, 100 - (idx * 10))
             artists_data.append({'name': item['name'], 'image': img_url, 'rank': rank, 'score': score})
 
