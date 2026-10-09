@@ -15,6 +15,11 @@ st.set_page_config(
     layout="centered"
 )
 
+# הגדרה אוטומטית ובטוחה של משתני הסביבה מתוך ה-Secrets של סטרימלייט
+os.environ['SPOTIPY_CLIENT_ID'] = st.secrets.get("SPOTIFY_CLIENT_ID", "")
+os.environ['SPOTIPY_CLIENT_SECRET'] = st.secrets.get("SPOTIFY_CLIENT_SECRET", "")
+os.environ['SPOTIPY_REDIRECT_URI'] = st.secrets.get("SPOTIFY_REDIRECT_URI", "https://fwnqbs94ukwawh.streamlit.app")
+
 # Custom CSS for Stunning Glassmorphism, Gorgeous Mode Cards, and Animations
 st.markdown("""
     <style>
@@ -125,14 +130,7 @@ load_dotenv()
 SPOTIFY_SCOPE = "user-top-read"
 
 def get_auth_manager():
-    client_id = st.secrets.get("SPOTIFY_CLIENT_ID") or "הכנס_כאן_פיזית_את_האיידי_שלך"
-    client_secret = st.secrets.get("SPOTIFY_CLIENT_SECRET") or "הכנס_כאן_פיזית_את_הסוד_שלך"
-    redirect_uri = st.secrets.get("SPOTIFY_REDIRECT_URI") or "https://spotify-music-autopsy-79ffaef7fwnqbs94ukwawh.streamlit.app"
-    
     return SpotifyOAuth(
-        client_id=client_id,
-        client_secret=client_secret,
-        redirect_uri=redirect_uri,
         scope=SPOTIFY_SCOPE,
         cache_path=None,
         show_dialog=True
@@ -338,7 +336,7 @@ if st.session_state.stage == 'dashboard':
         f"Behavioral Log: {st.session_state.roast_log}",
         "Aux Cord Hazard: Letting you pick songs at a party is a violation of basic human rights.",
         "Algorithm Victim: Your taste was carefully curated by a tired corporate machine in Stockholm.",
-        "Skip Button Abuse: You never finish a single song before your brain demands instant dopamine.",
+        "Skip Button Abuse: Query never finish a single song before your brain demands instant dopamine.",
         "Main Character Syndrome: You listen to this playlist while staring dramatically out of a bus window."
     ]
 
