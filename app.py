@@ -172,7 +172,7 @@ if st.session_state.stage == 'init':
     with c2:
         auth_url = auth_manager.get_authorize_url()
         st.markdown(f"""
-            <a href="{auth_url}" target="_self" style="text-decoration: none;">
+            <a href="{auth_url}" target="_blank" style="text-decoration: none;">
                 <div style="background: linear-gradient(135deg, #1ed760 0%, #059669 100%); color: #030712; font-weight: 800; text-align: center; border-radius: 40px; padding: 0.9rem 1.8rem; box-shadow: 0 0 30px rgba(30, 215, 96, 0.4); font-size: 1.1rem; margin-bottom: 12px;">
                     Unlock Your Trauma (Login)
                 </div>
