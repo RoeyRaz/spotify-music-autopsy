@@ -125,9 +125,9 @@ load_dotenv()
 SPOTIFY_SCOPE = "user-top-read"
 
 def get_auth_manager():
-    client_id = st.secrets.get("SPOTIFY_CLIENT_ID") or os.getenv("SPOTIFY_CLIENT_ID")
-    client_secret = st.secrets.get("SPOTIFY_CLIENT_SECRET") or os.getenv("SPOTIFY_CLIENT_SECRET")
-    redirect_uri = st.secrets.get("SPOTIFY_REDIRECT_URI") or os.getenv("SPOTIFY_REDIRECT_URI")
+    client_id = st.secrets.get("SPOTIFY_CLIENT_ID") or "הכנס_כאן_פיזית_את_האיידי_שלך"
+    client_secret = st.secrets.get("SPOTIFY_CLIENT_SECRET") or "הכנס_כאן_פיזית_את_הסוד_שלך"
+    redirect_uri = st.secrets.get("SPOTIFY_REDIRECT_URI") or "https://spotify-music-autopsy-79ffaef7fwnqbs94ukwawh.streamlit.app"
     
     return SpotifyOAuth(
         client_id=client_id,
