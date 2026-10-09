@@ -104,13 +104,19 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# יצירת מזהה סשן ייחודי לכל משתמש שפותח את האפליקציה כדי שלא ידרכו אחד לשני על הקאש
+if 'user_session_id' not in st.session_state:
+    st.session_state.user_session_id = str(time.time())
+
 def get_auth_manager():
+    # קובץ קאש נפרד לחלוטין לכל משתמש שמבקר באתר
+    unique_cache_path = f".cache_{st.session_state.user_session_id}"
     return SpotifyOAuth(
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
         redirect_uri=REDIRECT_URI,
         scope=SPOTIFY_SCOPE,
-        cache_path=None,
+        cache_path=unique_cache_path,
         show_dialog=True
     )
 
@@ -139,7 +145,6 @@ if "code" in query_params:
         token_info = auth_manager.get_access_token(code, as_dict=True)
         if token_info:
             st.session_state.token_info = token_info
-            # ניקוי מוחלט של פרמטרי ה-URL כדי למנוע שימוש חוזר בקוד פגום
             st.query_params.clear()
             st.session_state.stage = 'fetching'
             st.rerun()
@@ -147,11 +152,6 @@ if "code" in query_params:
         st.error(f"Authentication error: {e}")
 
 if st.session_state.stage == 'init':
-    # איפוס נתונים קודמים כדי לוודא שאין שאריות ממשתמש קודם
-    st.session_state.pop('artists_data', None)
-    st.session_state.pop('tracks_data', None)
-    st.session_state.pop('token_info', None)
-    
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
         auth_url = auth_manager.get_authorize_url()
@@ -169,13 +169,12 @@ if st.session_state.stage == 'fetching':
     time.sleep(0.2)
 
     try:
-        token_info = st.session_state.get("token_info")
+        token_info = auth_manager.get_cached_token()
         if not token_info:
             st.session_state.stage = 'init'
             st.rerun()
 
-        # חיבור המשתמש החדש באמצעות הטוקן האישי שלו בלבד
-        sp = spotipy.Spotify(auth=token_info['access_token'])
+        sp = spotipy.Spotify(auth_manager=auth_manager)
 
         log_container.markdown("<div class='live-log'>[LOG 02] Extracting unique user behavioral patterns...</div>", unsafe_allow_html=True)
         top_artists = sp.current_user_top_artists(limit=8, time_range='short_term')
