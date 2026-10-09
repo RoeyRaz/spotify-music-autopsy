@@ -151,8 +151,9 @@ if st.session_state.stage == 'init':
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
         auth_url = auth_manager.get_authorize_url()
+        # תוקן בחזרה ל- target="_blank" כדי למנוע את חסימת הדפדפן
         st.markdown(f"""
-            <a href="{auth_url}" target="_self" style="text-decoration: none;">
+            <a href="{auth_url}" target="_blank" style="text-decoration: none;">
                 <div style="background: #1f2937; color: #1ed760; font-weight: 600; text-align: center; border-radius: 8px; padding: 0.8rem 1.5rem; border: 1px solid #374151; font-size: 1rem;">
                     Connect Spotify Account
                 </div>
@@ -170,7 +171,6 @@ if st.session_state.stage == 'fetching':
             st.session_state.stage = 'init'
             st.rerun()
 
-        # יצירת מופע ספוטיפיי מבוסס על הטוקן הפרטי של המשתמש הנוכחי בלבד
         sp = spotipy.Spotify(auth=token_info['access_token'])
 
         log_container.markdown("<div class='live-log'>[LOG 02] Extracting unique user behavioral patterns...</div>", unsafe_allow_html=True)
